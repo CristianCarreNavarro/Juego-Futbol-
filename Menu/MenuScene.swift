@@ -11,6 +11,7 @@ import SpriteKit
 class MenuScene: SKScene {
     // Node references
     var backgroundEmmiter:SKEmitterNode!
+        var background:SKSpriteNode!
     var newGameButtonNode:SKSpriteNode!
     var difficultyButtonNode:SKSpriteNode!
     var difficultyLabelNode:SKLabelNode!
@@ -21,15 +22,24 @@ class MenuScene: SKScene {
         
         // Background starfield
        backgroundEmmiter = SKEmitterNode(fileNamed: "Starfield")
+      
         backgroundEmmiter.position = CGPoint(x: 0, y: self.frame.size.height)
         backgroundEmmiter.advanceSimulationTime(10)
         self.addChild(backgroundEmmiter)
         backgroundEmmiter.zPosition = -1
   
-        backgroundEmmiter = self.childNode(withName: "gol") as? SKEmitterNode
+        backgroundEmmiter = self.childNode(withName: "starfield") as? SKEmitterNode
         backgroundEmmiter?.advanceSimulationTime(10)
         
-   
+  
+        background = SKSpriteNode(texture: SKTexture(imageNamed: "gol"))
+        background.position = CGPoint(x: 0, y:  self.frame.size.height)
+      background.size = CGSize(width: self.frame.maxX+600, height: self.frame.maxY+1000)
+        
+        self.addChild(background)
+        background.zPosition = -1
+        
+        
         newGameButtonNode = SKSpriteNode(texture: SKTexture(imageNamed: "newgame"))
         newGameButtonNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
         self.addChild(newGameButtonNode)

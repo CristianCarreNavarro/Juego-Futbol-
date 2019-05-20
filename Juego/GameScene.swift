@@ -45,6 +45,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var futbolista2Timer = Timer()
     var futbolista3Timer = Timer()
     var pointTimer = Timer()
+    var pointTimerExtends = Timer()
     // boolean para saber si el juego está activo o finalizado
     var gameOver = false
     
@@ -92,10 +93,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func reiniciar() {
         
         // Creamos los timers
-        timer = Timer.scheduledTimer(timeInterval: 7, target: self, selector: #selector(self.ponerEstalactitas), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 72, target: self, selector: #selector(self.ponerEstalactitas), userInfo: nil, repeats: true)
         futbolista2Timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.addFutbolista2), userInfo: nil, repeats: true)
-        futbolista3Timer = Timer.scheduledTimer(timeInterval: 17, target: self, selector: #selector(self.addFutbolista3), userInfo: nil, repeats: true)
-        pointTimer =  Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(self.addPunto), userInfo: nil, repeats: true)
+        futbolista3Timer = Timer.scheduledTimer(timeInterval: 52, target: self, selector: #selector(self.addFutbolista3), userInfo: nil, repeats: true)
+        pointTimer =  Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.addPunto), userInfo: nil, repeats: true)
         
         // Ponemos la etiqueta con la puntuacion
         ponerPuntuacion()
@@ -275,7 +276,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Al inicial la pelota está quieta
         pelota.physicsBody?.isDynamic = true
-        
+        pelota.physicsBody?.mass = 1
         // Añadimos su categoría
         pelota.physicsBody!.categoryBitMask = tipoNodo.pelota.rawValue
     
@@ -307,7 +308,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Le aplicamos un impulso a la pelota para que suba cada vez que pulsemos la pantalla
 
-            pelota.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 50))
+            pelota.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 500))
         } else {
             // si toca la pantalla cuando el juego ha acabado, lo reiniciamos para volver a jugar
             gameOver = false
@@ -332,9 +333,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("Colision con puntos")
             puntuacion = puntuacion + 1
             if(cuerpoA.categoryBitMask  == tipoNodo.pelota.rawValue){
-                cuerpoB.node?.removeFromParent()}
-            
-            labelPuntuacion.text = String(puntuacion)
+                if(cuerpoB.categoryBitMask == tipoNodo.sumarPunto.rawValue){
+                      pointTimerExtends =  Timer.scheduledTimer(withTimeInterval: 3, repeats: false){_ in
+                     cuerpoB.node?.removeFromParent()
+                    }
+                }else{
+                cuerpoB.node?.removeFromParent()
+                    
+                }
+                self.labelPuntuacion.text = String(self.puntuacion)
+
+            }
         } else {
             gameOver = true
             // Frenamos todo
@@ -402,7 +411,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(futbolista3)
         
         let animationDuration:TimeInterval = 10
-        let actionMove = SKAction.moveBy(x:  -self.frame.maxX  , y:0, duration: animationDuration )
+        let actionMove = SKAction.moveBy(x:  self.frame.maxX - 2000 , y:0, duration: animationDuration )
         let actionRemove = SKAction.removeFromParent()
         let actionLeftRight = SKAction.sequence([ actionMove, actionRemove ])
         
@@ -422,19 +431,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         punto.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "punto.png"), alphaThreshold: 0.5, size: punto.size)
         punto.physicsBody?.isDynamic = true
         punto.physicsBody?.affectedByGravity = false
-     
+     punto.physicsBody?.mass = 0.0002
         // Collision mask
         punto.physicsBody?.categoryBitMask = tipoNodo.sumarPunto.rawValue
         punto.physicsBody?.contactTestBitMask = tipoNodo.pelota.rawValue
         punto.physicsBody?.collisionBitMask = tipoNodo.pelota.rawValue
         self.addChild(punto)
         
-        let animationDuration:TimeInterval = 7.5
+        let animationDuration:TimeInterval = 10.5
         let actionMove = SKAction.moveBy(x: self.frame.minX-1800, y:0, duration: animationDuration )
-        let actionRemove = SKAction.removeFromParent()
-        let actionLeftRight = SKAction.sequence([ actionMove, actionRemove ])
         
-        punto.run(actionLeftRight)
+  
+            let actionRemove = SKAction.removeFromParent()
+            let actionLeftRight = SKAction.sequence([ actionMove, actionRemove ])
+            punto.run(actionLeftRight)
+        
+     
     }
     
     override func update(_ currentTime: TimeInterval) {
